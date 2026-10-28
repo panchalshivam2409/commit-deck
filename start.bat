@@ -1,0 +1,3 @@
+@echo off
+echo Starting CommitDeck...
+start "" "index.html"

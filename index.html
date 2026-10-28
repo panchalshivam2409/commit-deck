@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CommitDeck - Unified Focus & Habit Deck</title>
+  <meta name="description" content="State-driven developer dashboard uniting a drift-free focus timer, Big Three priority tracker, ambient sound mixer, and GitHub-style 365-day contribution heatmap." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20width=%22100%22%20height=%22100%22><text y=%22.9em%22 font-size=%2290%22>🟩</text></svg>" />
+</head>
+<body>
+  <!-- Celebration Toast Banner -->
+  <div id="celebration-banner" class="celebration-banner">
+    <div class="celebration-content">
+      <span class="celebration-icon">🎉</span>
+      <div class="celebration-text">
+        <strong>Session Completed!</strong>
+        <span>+1 point logged to your contribution heatmap. Time for a well-earned break!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-branding">
+        <div class="brand-logo">
+          <span class="logo-box"></span>
+          <span class="logo-text">Commit<span class="highlight">Deck</span></span>
+        </div>
+        <span class="deck-tag">Unified Focus &amp; Habit Engine</span>
+      </div>
+
+      <div class="header-center">
+        <div id="current-date-badge" class="badge badge-date">Loading date...</div>
+        <div id="header-today-score" class="badge badge-score" title="Today's total contribution score">0 pts today</div>
+      </div>
+
+      <div class="header-actions">
+        <button id="master-mute-btn" class="btn btn-secondary btn-sm" title="Mute/Unmute ambient sounds">
+          🔊 <span>Mute All</span>
+        </button>
+        <button id="settings-btn" class="btn btn-secondary btn-sm" title="Settings &amp; Data Backup">
+          ⚙️ <span>Settings</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main 3-Column Deck -->
+    <main class="deck-grid">
+      <!-- 1. Pomodoro Focus Timer -->
+      <section class="card timer-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">Focus Timer</h2>
+            <span class="card-subtitle">Drift-free timestamp clock</span>
+          </div>
+          <div class="timer-mode-switcher">
+            <button type="button" class="timer-mode-btn active" data-mode="focus">Focus</button>
+            <button type="button" class="timer-mode-btn" data-mode="short_break">Break (5m)</button>
+            <button type="button" class="timer-mode-btn" data-mode="long_break">Long (15m)</button>
+          </div>
+        </div>
+
+        <div class="timer-dial-container">
+          <svg class="timer-svg" viewBox="0 0 300 300">
+            <circle class="timer-track" cx="150" cy="150" r="135" />
+            <circle id="timer-progress-ring" class="timer-progress" cx="150" cy="150" r="135" />
+          </svg>
+          <div class="timer-display-content">
+            <div id="timer-time" class="timer-digits">25:00</div>
+            <div class="timer-sublabel">Press <kbd>Space</kbd> to toggle</div>
+          </div>
+        </div>
+
+        <div class="timer-controls">
+          <button id="timer-toggle-btn" class="btn btn-primary btn-lg">
+            <span class="icon">▶</span>
+            <span>Start</span>
+          </button>
+          <button id="timer-reset-btn" class="btn btn-secondary btn-lg" title="Reset timer (Shortcut: R)">
+            <span class="icon">↺</span>
+            <span>Reset</span>
+          </button>
+        </div>
+
+        <div class="timer-footer">
+          <span class="hint-pill">Hotkeys: <kbd>Space</kbd> Start/Pause &bull; <kbd>R</kbd> Reset</span>
+          <span class="point-reward-pill">+1 pt / session</span>
+        </div>
+      </section>
+
+      <!-- 2. Daily Priorities & Habits -->
+      <section class="card action-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">Daily Priorities</h2>
+            <span class="card-subtitle">The Big Three &amp; Habits</span>
+          </div>
+          <span class="rollover-pill" title="Completed tasks clear at midnight; unfinished roll over">Midnight Rollover Active</span>
+        </div>
+
+        <!-- Big Three Tasks -->
+        <div class="tasks-section">
+          <div class="section-micro-header">
+            <span class="micro-title">The Big Three Focus Tasks</span>
+            <span class="micro-meta">+1 pt per checked task</span>
+          </div>
+          <div id="big-three-container" class="big-three-list">
+            <!-- Rendered by js/tasks.js -->
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Daily Habits -->
+        <div class="habits-section">
+          <div class="section-micro-header">
+            <span class="micro-title">Daily Habit Engine</span>
+            <span class="micro-meta">Instant heatmap feed</span>
+          </div>
+          <div id="habits-container" class="habits-grid">
+            <!-- Rendered by js/tasks.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Ambient Soundboard Mixer -->
+      <section class="card soundboard-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <h2 class="card-title">Soundboard Mixer</h2>
+            <span class="card-subtitle">Procedural Web Audio synthesis</span>
+          </div>
+          <div class="master-vol-control" title="Master volume">
+            <span class="vol-icon-small">🔊</span>
+            <input type="range" id="master-volume-slider" min="0" max="100" value="80" />
+          </div>
+        </div>
+
+        <div id="soundboard-grid" class="soundboard-grid">
+          <!-- Rendered dynamically by js/app.js -->
+        </div>
+
+        <div class="soundboard-footer">
+          <span class="soundboard-hint">💡 Blend multiple ambient tracks to enhance deep focus. Adjusting any volume slider auto-plays that track.</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Full-Width: GitHub-Style Heatmap -->
+    <section class="card heatmap-card">
+      <div class="heatmap-header">
+        <div class="heatmap-title-group">
+          <h2 class="card-title">365-Day Contribution Grid</h2>
+          <span class="card-subtitle">52 weeks of synchronized deep work, task execution, and daily habits</span>
+        </div>
+
+        <div class="heatmap-stats" id="heatmap-stats">
+          <div class="stat-pill">
+            <span class="stat-label">Current Streak</span>
+            <span class="stat-value" id="stat-current-streak">0 days</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Longest Streak</span>
+            <span class="stat-value" id="stat-longest-streak">0 days</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Active Days</span>
+            <span class="stat-value" id="stat-active-days">0</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-label">Year Score</span>
+            <span class="stat-value" id="stat-total-points">0</span>
+          </div>
+          <div class="stat-pill highlight-pill">
+            <span class="stat-label">Today's Score</span>
+            <span class="stat-value" id="stat-today-points">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heatmap Scroll/Scale Wrapper -->
+      <div class="heatmap-wrapper">
+        <div class="heatmap-body">
+          <!-- Left Weekday Labels -->
+          <div class="heatmap-weekdays">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+          </div>
+
+          <div class="heatmap-content-area">
+            <!-- Top Month Header -->
+            <div id="heatmap-months" class="heatmap-months"></div>
+
+            <!-- CSS Grid for 52-week Columns -->
+            <div id="heatmap-grid" class="heatmap-grid"></div>
+          </div>
+        </div>
+
+        <!-- Floating Tooltip -->
+        <div id="heatmap-tooltip" class="heatmap-tooltip"></div>
+      </div>
+
+      <!-- Heatmap Legend and Inspector -->
+      <div class="heatmap-footer">
+        <div id="day-inspector" class="day-inspector hidden">
+          <!-- Populated on cell click -->
+        </div>
+
+        <div class="heatmap-legend">
+          <span class="legend-label">Less</span>
+          <div class="legend-cells">
+            <span class="heat-cell level-0" title="0 points"></span>
+            <span class="heat-cell level-1" title="1 point"></span>
+            <span class="heat-cell level-2" title="2-3 points"></span>
+            <span class="heat-cell level-3" title="4-5 points"></span>
+            <span class="heat-cell level-4" title="6+ points"></span>
+          </div>
+          <span class="legend-label">More</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Settings & Backup Modal -->
+  <div id="settings-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ CommitDeck Settings</h3>
+        <button id="modal-close-btn" class="modal-close-btn">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Focus Duration (minutes)</label>
+          <input type="number" id="setting-focus-duration" class="form-input" min="1" max="180" value="25" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Short Break (minutes)</label>
+            <input type="number" id="setting-short-break" class="form-input" min="1" max="60" value="5" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Long Break (minutes)</label>
+            <input type="number" id="setting-long-break" class="form-input" min="1" max="60" value="15" />
+          </div>
+        </div>
+
+        <div class="form-checkbox-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="setting-auto-breaks" />
+            <span>Auto-start breaks after focus sessions</span>
+          </label>
+        </div>
+
+        <div class="modal-divider"></div>
+
+        <div class="modal-section-title">Data Backup &amp; Preview</div>
+        <div class="modal-buttons-row">
+          <button id="seed-demo-btn" class="btn btn-secondary btn-sm" title="Fill heatmap with sample data to preview">
+            🎲 Seed Sample 365-Day Data
+          </button>
+          <button id="export-data-btn" class="btn btn-secondary btn-sm" title="Download backup JSON">
+            📥 Export Backup JSON
+          </button>
+          <button id="import-data-btn" class="btn btn-secondary btn-sm" title="Restore from JSON file">
+            📤 Import JSON
+          </button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;" />
+        </div>
+
+        <div class="modal-divider"></div>
+
+        <div class="modal-section-title danger-title">Danger Zone</div>
+        <button id="reset-all-btn" class="btn btn-danger btn-sm">
+          ⚠️ Reset All History &amp; Data
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button id="save-settings-btn" class="btn btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Bundle (runs on file:/// and http://) -->
+  <script src="js/bundle.js"></script>
+</body>
+</html>
